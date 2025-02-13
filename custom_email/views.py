@@ -20,8 +20,6 @@ from pedidos.serializers import PedidoSerializer  # Serializador para transforma
 import uuid  # Para gerar tokens únicos
 from django.template.loader import render_to_string  # Para renderizar templates HTML
 from django.shortcuts import render  # Para renderizar páginas HTML
-from services.callmebot import CallMeBot
-from .messages import formatar_mensagem_whatsapp
 
 
 # Classe para envio de e-mail de confirmação de pedido
@@ -55,7 +53,6 @@ class EnviarEmailConfirmacaoPedido(APIView):
             site = get_current_site(request)
             link_confirmacao = f"http://{site.domain}{reverse('confirmar-pedido', kwargs={'token': pedido.ped_conf_cli_token.upper()})}"
 
-            mensagem_whatsapp = formatar_mensagem_whatsapp(pedido, link_confirmacao)
 
             # Contexto para renderizar o e-mail
             context = {
@@ -84,16 +81,9 @@ class EnviarEmailConfirmacaoPedido(APIView):
             # Envia o e-mail
             email.send(fail_silently=False)
 
-            # Agora, envia a mensagem via WhatsApp
-            callmebot = CallMeBot()
-            response_message = callmebot.send_message(mensagem_whatsapp)
-
-            if "Erro" in response_message:
-                return Response({"error": f"Erro ao enviar mensagem WhatsApp: {response_message}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-            # Responde ao cliente após e-mail e WhatsApp serem enviados
+            # Responde ao cliente após e-mail serem enviados
             return Response({
-                'message': 'E-mail e mensagem WhatsApp enviados com sucesso',
+                'message': 'E-mail enviados com sucesso',
                 'pedido_id': pedido.ped_conf_cli_ped_id
             }, status=status.HTTP_200_OK)
 

@@ -147,9 +147,6 @@ REST_FRAMEWORK = {
     ],
 }
 
-CALLMEBOT_API_URL = config('CALLMEBOT_API_URL')
-CALLMEBOT_PHONE_NUMBER = config('CALLMEBOT_PHONE_NUMBER')
-CALLMEBOT_API_KEY = config('CALLMEBOT_API_KEY')
 
 try:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
